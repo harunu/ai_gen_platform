@@ -6,7 +6,7 @@
 # --- Web framework ---
 fastapi==0.111.0          # Modern async Python web framework
 uvicorn[standard]==0.29.0 # ASGI server; [standard] adds websocket + reload support
-python-multipart==0.0.9   # Needed by FastAPI for form/file upload parsing
+python-multipart==0.0.31   # Needed by FastAPI for form/file upload parsing
 
 # --- Data validation ---
 pydantic==2.7.1           # V2: much faster than V1, uses Rust-backed core
