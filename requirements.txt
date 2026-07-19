@@ -39,5 +39,5 @@ pytest-asyncio==0.23.6    # Enables async test functions
 pytest-cov==5.0.0         # Code coverage reporting
 
 # --- Utilities ---
-python-dotenv==1.0.1      # Loads .env files into os.environ
+python-dotenv==1.2.2      # Loads .env files into os.environ
 tenacity==8.3.0           # Retry logic with exponential backoff
