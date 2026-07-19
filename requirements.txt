@@ -1,0 +1,43 @@
+# ============================================================
+# ai_gen_platform — Python dependencies
+# Pin versions for reproducible builds in production.
+# ============================================================
+
+# --- Web framework ---
+fastapi==0.111.0          # Modern async Python web framework
+uvicorn[standard]==0.29.0 # ASGI server; [standard] adds websocket + reload support
+python-multipart==0.0.9   # Needed by FastAPI for form/file upload parsing
+
+# --- Data validation ---
+pydantic==2.7.1           # V2: much faster than V1, uses Rust-backed core
+pydantic-settings==2.2.1  # Pydantic-based settings management (reads .env files)
+
+# --- Async HTTP client ---
+httpx==0.27.0             # Async-capable HTTP client; used for LLM API calls
+
+# --- Vector database ---
+chromadb==0.5.0           # Local-first vector store; runs as a server in Docker
+numpy<2.0                 # chromadb 0.5.0 uses np.float_ removed in NumPy 2.0
+
+# --- Embeddings (local, free, no API key) ---
+sentence-transformers==2.7.0  # Hugging Face library; wraps transformer models for embeddings
+torch==2.3.0              # Required by sentence-transformers (CPU-only is fine)
+
+# --- Authentication ---
+python-jose[cryptography]==3.3.0  # JWT creation and validation
+bcrypt>=4.0.1                     # Password hashing; passlib 1.7.4 is incompatible with 4.0+, use bcrypt directly
+
+# --- Rate limiting ---
+slowapi==0.1.9            # Rate limiting middleware for FastAPI (wraps limits library)
+
+# --- Structured logging ---
+structlog==24.1.0         # Structured JSON logging; much better than stdlib logging
+
+# --- Testing ---
+pytest==8.2.0
+pytest-asyncio==0.23.6    # Enables async test functions
+pytest-cov==5.0.0         # Code coverage reporting
+
+# --- Utilities ---
+python-dotenv==1.0.1      # Loads .env files into os.environ
+tenacity==8.3.0           # Retry logic with exponential backoff

@@ -1,0 +1,80 @@
+# ============================================================
+# docker-compose.yml — Orchestrates all services for local development
+#
+# Services:
+#   app    — FastAPI backend (port 8000)
+#   chroma — ChromaDB vector database (port 8001)
+#
+# Run everything: docker compose up --build
+# ============================================================
+
+services:
+  # ── ChromaDB ──────────────────────────────────────────────
+  # ChromaDB is our vector database. It stores document embeddings
+  # and supports fast similarity search.
+  # We start it BEFORE the app so the app can connect on boot.
+  chroma:
+    build:
+      context: .
+      dockerfile: docker/chroma.Dockerfile
+    image: ai_gen_platform_chroma
+    container_name: ai_gen_chroma
+    ports:
+      - "8001:8000"           # Expose so you can inspect ChromaDB directly (internal port is 8000)
+    environment:
+      - IS_PERSISTENT=TRUE    # Persist data to disk (not just in-memory)
+      - PERSIST_DIRECTORY=/chroma/chroma
+      - ANONYMIZED_TELEMETRY=FALSE  # Disable ChromaDB analytics
+    volumes:
+      # Named volume: data survives container restarts and rebuilds
+      - chroma_data:/chroma/chroma
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - ai_net
+
+  # ── FastAPI Application ────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: docker/app.Dockerfile
+    image: ai_gen_platform_app
+    container_name: ai_gen_app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env                  # Load all env vars from .env (copy from .env.example)
+    environment:
+      # Override CHROMA_HOST to point to the Docker service name, not localhost
+      - CHROMA_HOST=chroma
+      - CHROMA_PORT=8000
+    volumes:
+      # Mount source code for hot-reload during development.
+      # Changes to .py files restart the server automatically.
+      - ./app:/app/app
+      - ./scripts:/app/scripts
+      - ./tests:/app/tests
+      # Mount data directory read-only — app reads docs, never writes them
+      - ./data:/app/data:ro
+      # Cache the downloaded embedding model between rebuilds
+      - model_cache:/root/.cache/huggingface
+    depends_on:
+      chroma:
+        condition: service_healthy   # Wait until ChromaDB is ready before starting
+    networks:
+      - ai_net
+    restart: unless-stopped
+
+# ── Named Volumes ──────────────────────────────────────────
+volumes:
+  chroma_data:    # Persists ChromaDB index between restarts
+  model_cache:    # Caches HuggingFace models between rebuilds (saves ~90MB download)
+
+# ── Networks ───────────────────────────────────────────────
+networks:
+  ai_net:
+    driver: bridge   # Services on this network can reach each other by service name
