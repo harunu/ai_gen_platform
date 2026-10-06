@@ -20,7 +20,7 @@ chromadb==0.5.0           # Local-first vector store; runs as a server in Docker
 numpy<2.0                 # chromadb 0.5.0 uses np.float_ removed in NumPy 2.0
 
 # --- Embeddings (local, free, no API key) ---
-sentence-transformers==2.7.0  # Hugging Face library; wraps transformer models for embeddings
+sentence-transformers==5.6.0  # Hugging Face library; wraps transformer models for embeddings
 torch==2.3.0              # Required by sentence-transformers (CPU-only is fine)
 
 # --- Authentication ---
