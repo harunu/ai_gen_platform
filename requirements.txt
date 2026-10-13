@@ -24,7 +24,7 @@ sentence-transformers==2.7.0  # Hugging Face library; wraps transformer models f
 torch==2.3.0              # Required by sentence-transformers (CPU-only is fine)
 
 # --- Authentication ---
-python-jose[cryptography]==3.3.0  # JWT creation and validation
+python-jose[cryptography]==3.5.0  # JWT creation and validation
 bcrypt>=4.0.1                     # Password hashing; passlib 1.7.4 is incompatible with 4.0+, use bcrypt directly
 
 # --- Rate limiting ---
